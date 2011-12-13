@@ -250,3 +250,60 @@ Swipe.prototype = {
   }
 
 };
+
+/**
+ * Gets IE version number or -1 if browser is not IE.
+ * @returns {Number}
+ */
+function getInternetExplorerVersion()
+{
+  var rv = -1; // Return value assumes failure.
+  if (navigator.appName == 'Microsoft Internet Explorer')
+  {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+      rv = parseFloat( RegExp.$1 );
+  }
+  return rv;
+}
+
+/**
+ * Basic swipe support for IE.
+ */
+window.SwipeIE = function(element, options){
+	if (!element) return null;
+	
+	var _this = this;
+	
+	this.options = options || {};
+	this.index = this.options.startSlide || 0;
+	this.element = element;
+	this.ul = $(element).first();
+	this.setup();
+}
+
+SwipeIE.prototype = {
+	setup : function() {
+	    this.slides = this.ul.find('li');
+	    this.length = this.slides.length;
+	},
+	slide : function(index){
+		$(this.element).find('li').hide();
+		$(this.slides[index]).show().find('img').show();
+		this.index = index;
+		if(typeof(this.options.slideCallback) != 'undefined'){
+	    	this.options.slideCallback();
+	    }
+	},
+	getPos : function() {
+		return this.index;
+	},
+	prev : function() {
+		if(this.index) this.slide(this.index-1);
+	},
+	next : function(){
+		if (this.index < this.length - 1) this.slide(this.index+1);
+		else this.slide(0);
+	}
+}
